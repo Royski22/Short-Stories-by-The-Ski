@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sci-Fi Stories by [Your Name]</title>
+    <style>
+        body {
+            background: #0d1b2a;
+            color: #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background: #1b263b;
+            border-bottom: 2px solid #415a77;
+        }
+        h1 {
+            color: #00d4ff;
+            text-transform: uppercase;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .story-list, .subscribe {
+            background: #1b263b;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            background: #00d4ff;
+            border: none;
+            padding: 10px 20px;
+            color: #0d1b2a;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #0096c7;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sci-Fi Stories by [Your Name]</h1>
+        <p>Explore the unknown, one tale at a time.</p>
+    </header>
+    <div class="container">
+        <section class="story-list">
+            <h2>Latest Stories</h2>
+            <ul id="stories">
+                <li><a href="#">The Quantum Drift (Free Preview)</a></li>
+                <!-- Stories will be dynamically added here -->
+            </ul>
+        </section>
+        <section class="subscribe">
+            <h2>Subscribe for Full Access</h2>
+            <p>Get unlimited access to all stories for $5/month.</p>
+            <button onclick="subscribe()">Subscribe Now</button>
+        </section>
+        <section class="upload" style="display: none;">
+            <h2>Upload New Story</h2>
+            <input type="file" id="storyFile" accept=".txt,.pdf">
+            <button onclick="uploadStory()">Upload</button>
+            <p id="upload-status"></p>
+        </section>
+    </div>
+
+    <script>
+        // Placeholder for subscription logic
+        function subscribe() {
+            alert("Redirecting to payment processor...");
+            // Add payment integration here (Step 4)
+        }
+
+        // Placeholder for upload logic
+        function uploadStory() {
+            const fileInput = document.getElementById('storyFile');
+            if (fileInput.files.length > 0) {
+                document.getElementById('upload-status').textContent = "Story uploaded successfully!";
+                // Add file handling logic here (Step 3)
+            } else {
+                document.getElementById('upload-status').textContent = "Please select a file.";
+            }
+        }
+    </script>
+</body>
+</html>
