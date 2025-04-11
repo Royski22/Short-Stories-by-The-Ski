@@ -3,34 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Short Stories by The Ski</title>
+    <title>Sci-Fi Stories by The Ski</title>
     <style>
         body {
-            background: #0d1b2a;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png'), #0d1b2a;
             color: #e0e0e0;
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 20px;
+            animation: twinkle 10s infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { background-opacity: 1; }
+            50% { background-opacity: 0.8; }
         }
         header {
             text-align: center;
             padding: 20px;
-            background: #1b263b;
+            background: rgba(27, 38, 59, 0.9);
             border-bottom: 2px solid #415a77;
         }
         h1 {
             color: #00d4ff;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
         .container {
             max-width: 800px;
             margin: 20px auto;
         }
-        .story-list, .subscribe {
-            background: #1b263b;
+        .story-list, .subscribe, .upload {
+            background: rgba(27, 38, 59, 0.9);
             padding: 15px;
             margin: 10px 0;
             border-radius: 5px;
+            border: 1px solid #415a77;
+        }
+        .story-list a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+        .story-list a:hover {
+            text-decoration: underline;
         }
         button {
             background: #00d4ff;
@@ -39,23 +53,27 @@
             color: #0d1b2a;
             cursor: pointer;
             border-radius: 5px;
+            font-weight: bold;
         }
         button:hover {
             background: #0096c7;
+        }
+        .upload {
+            display: none;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Short Stories by The Ski</h1>
+        <h1>Sci-Fi Stories by The Ski</h1>
         <p>Explore the unknown, one tale at a time.</p>
     </header>
     <div class="container">
         <section class="story-list">
             <h2>Latest Stories</h2>
             <ul id="stories">
-                <li><a href="#">The Communicator - The Return of Planet X</a></li>
-                <!-- Stories will be dynamically added here -->
+                <li><a href="#">The Communicator - The Return of Planet x (Free Preview)</a></li>
+                <!-- Dynamic stories added here -->
             </ul>
         </section>
         <section class="subscribe">
@@ -63,7 +81,7 @@
             <p>Get unlimited access to all stories for $5/month.</p>
             <button onclick="subscribe()">Subscribe Now</button>
         </section>
-        <section class="upload" style="display: none;">
+        <section class="upload">
             <h2>Upload New Story</h2>
             <input type="file" id="storyFile" accept=".txt,.pdf">
             <button onclick="uploadStory()">Upload</button>
@@ -71,23 +89,83 @@
         </section>
     </div>
 
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
-        // Placeholder for subscription logic
-        function subscribe() {
-            alert("Redirecting to payment processor...");
-            // Add payment integration here (Step 4)
-        }
-
-        // Placeholder for upload logic
-        function uploadStory() {
-            const fileInput = document.getElementById('storyFile');
-            if (fileInput.files.length > 0) {
-                document.getElementById('upload-status').textContent = "Story uploaded successfully!";
-                // Add file handling logic here (Step 3)
+        // Admin controls
+        const adminPassword = "Royski22!!"; // Change this!
+        const uploadSection = document.querySelector('.upload');
+        function checkAdmin() {
+            const password = prompt("Enter admin password:");
+            if (password === adminPassword) {
+                uploadSection.style.display = 'block';
             } else {
-                document.getElementById('upload-status').textContent = "Please select a file.";
+                alert("Incorrect password!");
             }
         }
-    </script>
-</body>
-</html>
+
+        // Upload story
+        async function uploadStory() {
+            const fileInput = document.getElementById('storyFile');
+            const status = document.getElementById('upload-status');
+            const token = "your-github-token"; // Replace with your token
+            const repo = "Royski22/Royski22.github.io";
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileName = file.name;
+                const reader = new FileReader();
+
+                reader.onload = async function(event) {
+                    const content = event.target.result;
+                    const encodedContent = btoa(content); // Base64 encode
+                    const url = `https://api.github.com/repos/${repo}/contents/stories/${fileName}`;
+
+                    try {
+                        const response = await fetch(url, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `token ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                message: `Add ${fileName}`,
+                                content: encodedContent
+                            })
+                        });
+
+                        if (response.ok) {
+                            const storyList = document.getElementById('stories');
+                            const newStory = document.createElement('li');
+                            newStory.innerHTML = `<a href="stories/${fileName}">${fileName}</a>`;
+                            storyList.appendChild(newStory);
+                            status.textContent = "Story uploaded successfully!";
+                            fileInput.value = '';
+                        } else {
+                            status.textContent = "Upload failed. Check token or file.";
+                        }
+                    } catch (error) {
+                        status.textContent = "Error: " + error.message;
+                    }
+                };
+
+                reader.readAsBinaryString(file); // For .txt/.pdf
+            } else {
+                status.textContent = "Please select a file.";
+            }
+        }
+
+        // Stripe subscription
+        const stripe = Stripe('pk_test_your_publishable_key'); // Replace with your key
+        function subscribe() {
+            stripe.redirectToCheckout({
+                lineItems: [{ price: 'price_xxxxxxxx', quantity: 1 }], // Replace with your price ID
+                mode: 'subscription',
+                successUrl: 'https://Royski22.github.io/success.html',
+                cancelUrl: 'https://Royski22.github.io/cancel.html'
+            }).then(function (result) {
+                if (result.error) alert(result.error.message);
+            });
+        }
+
+        // Uncomment to test admin access
+        // checkAdmin();
